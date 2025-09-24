@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Fortune Cookie</title>
+  <style>
+    :root{--bg1:#FFEFBA;--bg2:#FFFFFF;--accent:#F6A623;--muted:#6b6b6b}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(180deg,var(--bg1),var(--bg2));
+      color:#111;
+    }
+    .card{
+      width:min(720px,92vw);
+      text-align:center;
+      background:rgba(255,255,255,0.9);
+      box-shadow:0 12px 30px rgba(0,0,0,0.12);
+      border-radius:18px;padding:36px;
+      backdrop-filter: blur(4px);
+    }
+    h1{margin:0 0 8px;font-size:28px}
+    p.lead{color:var(--muted);margin:0 0 22px}
+    .cookie-wrap{display:flex;gap:20px;align-items:center;justify-content:center;flex-wrap:wrap}
+    .cookie{
+      width:160px;height:160px;border-radius:50%;
+      background:conic-gradient(from 200deg,#fff 0 25%, #fde7c2 25% 100%);
+      display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 30px rgba(246,166,35,0.2);
+      transform-origin:center;
+    }
+    .cookie:active{transform:scale(.98)}
+    .crack{width:70%;height:2px;background:linear-gradient(90deg,#b57d2b,#f3d2a0);border-radius:4px;transform:translateY(8px)}
+    .fortune{
+      min-height:80px;margin-top:18px;font-size:18px;padding:12px 18px;border-radius:10px;
+      background:linear-gradient(180deg,rgba(246,166,35,0.06),transparent);
+      color:#333;display:flex;align-items:center;justify-content:center;
+    }
+    .controls{margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+    button{
+      border:0;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer;
+      background:var(--accent);color:#fff;box-shadow:0 6px 18px rgba(246,166,35,0.18)
+    }
+    button.ghost{background:transparent;color:#333;border:1px solid rgba(0,0,0,0.06)}
+    .small{font-size:13px;padding:8px 10px}
+    footer{margin-top:18px;color:var(--muted);font-size:13px}
+    @keyframes open {
+      0% { transform:scale(1) rotate(0deg); }
+      60% { transform:scale(1.04) rotate(-6deg); }
+      100% { transform:scale(1) rotate(0deg); }
+    }
+    .open { animation: open .7s ease both; }
+  </style>
+</head>
+<body>
+  <div class="card" role="main" aria-labelledby="title">
+    <h1 id="title">Fortune Cookie</h1>
+    <p class="lead">Click the cookie to reveal your fortune ✨</p>
+
+    <div class="cookie-wrap">
+      <div class="cookie" id="cookie" aria-hidden="false" title="Click me">
+        <div class="crack" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <div class="fortune" id="fortune">Your fortune will appear here.</div>
+
+    <div class="controls">
+      <button id="newBtn" class="small">New Fortune</button>
+      <button id="copyBtn" class="small ghost">Copy</button>
+      <button id="tweetBtn" class="small ghost">Share</button>
+    </div>
+
+    <footer>Built with ❤️ — Host it free on Firebase Hosting</footer>
+  </div>
+
+  <script>
+    const fortunes = [
+      "A pleasant surprise is waiting for you.",
+      "An old friend will bring good news.",
+      "Your curiosity will lead to success.",
+      "Small steps will take you far.",
+      "Trust your instincts — they know the way.",
+      "A new hobby will bring unexpected joy.",
+      "Kindness you show will come back to you.",
+      "Today will be a good day to start something.",
+      "A risk you take today will be worth it.",
+      "You will find beauty in the small things.",
+      "A helpful person is coming into your life.",
+      "You are closer than you think to a big win.",
+      "A short trip will bring long memories.",
+      "Your creativity will solve a nagging problem.",
+      "Patience pays off — keep going.",
+      "A fresh perspective will change everything.",
+      "Happiness takes courage. You have plenty of it.",
+      "Someone will appreciate your honesty today.",
+      "Your idea will attract the right attention.",
+      "Change is near; embrace it with an open heart."
+    ];
+
+    function randInt(n){ return Math.floor(Math.random()*n); }
+    const cookieEl = document.getElementById('cookie');
+    const fortuneEl = document.getElementById('fortune');
+    const newBtn = document.getElementById('newBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const tweetBtn = document.getElementById('tweetBtn');
+
+    function showFortune() {
+      const f = fortunes[randInt(fortunes.length)];
+      fortuneEl.textContent = f;
+      cookieEl.classList.add('open');
+      setTimeout(()=> cookieEl.classList.remove('open'), 800);
+      return f;
+    }
+
+    cookieEl.addEventListener('click', () => showFortune());
+    newBtn.addEventListener('click', () => showFortune());
+
+    copyBtn.addEventListener('click', async () => {
+      const text = fortuneEl.textContent;
+      try {
+        await navigator.clipboard.writeText(text);
+        copyBtn.textContent = 'Copied!';
+        setTimeout(()=> copyBtn.textContent = 'Copy',1200);
+      } catch (e) {
+        alert('Copy failed — select and copy manually.');
+      }
+    });
+
+    tweetBtn.addEventListener('click', () => {
+      const text = encodeURIComponent(fortuneEl.textContent || 'My fortune!');
+      const url = `https://twitter.com/intent/tweet?text=${text} #FortuneCookie`;
+      window.open(url,'_blank','noopener');
+    });
+
+    // show one on load
+    document.addEventListener('DOMContentLoaded', showFortune);
+  </script>
+</body>
+</html>
